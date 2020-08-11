@@ -1,3 +1,10 @@
+<?php
+
+include('database/connection.php');
+require('functions/functions.php');
+
+?>
+
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">

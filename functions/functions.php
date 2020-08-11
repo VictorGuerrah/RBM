@@ -1,7 +1,5 @@
 <?php
 
-include('database/connection.php');
-
 function getClientes() {
     global $conn;
 
@@ -23,6 +21,24 @@ function getProdutos() {
     global $conn;
 
     $sql = "SELECT * FROM produto";
+    
+    try{
+        $stmt = $conn->prepare($sql);
+        $stmt->execute();
+        while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
+            $return[] = $row;
+        }
+        return $return;
+    } catch (PDOException $e) {
+        echo $e->getMessage();
+    }
+}
+
+function getVendas() {
+    global $conn;
+
+    $sql = "SELECT v.CD_VENDA, c.NM_CLIENTE, DATE_FORMAT(v.DT_VENDA, '%d/%m/%Y') AS DT_VENDA FROM venda v
+            JOIN cliente c ON c.CD_CLIENTE = v.CD_CLIENTE";
     
     try{
         $stmt = $conn->prepare($sql);
@@ -68,6 +84,31 @@ function getProduto($id) {
     }
 }
 
+function getVenda($id) {
+    global $conn;
+
+    $sql = "SELECT 
+                NM_PRODUTO, QTD_PRODUTO, VL_PRODUTO 
+            FROM 
+                assoc_produto_venda a
+            JOIN 
+                produto p
+                ON  a.CD_PRODUTO = p.CD_PRODUTO
+            
+            WHERE a.CD_VENDA = $id";
+    
+    try{
+        $stmt = $conn->prepare($sql);
+        $stmt->execute();
+        while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
+            $return[] = $row;
+        }
+        return $return;
+    } catch (PDOException $e) {
+        echo $e->getMessage();
+    }
+}
+
 function insertCliente($dados) {
     global $conn;
 
@@ -99,6 +140,38 @@ function insertProduto($dados) {
     }
 }
 
+function insertVenda($dados) {
+    global $conn;
+
+    $sql = "INSERT INTO venda (CD_CLIENTE) VALUES ({$dados['CD_CLIENTE']})";
+
+    try{
+        $stmt = $conn->prepare($sql);
+        $stmt->execute();
+        $id = $conn->lastInsertId();
+        insertVendaAssoc($id, $dados['produtos'], $dados['quantidade']);
+        return 'Success';
+    } catch (PDOException $e) {
+        echo $e->getMessage();
+    }
+}
+
+function insertVendaAssoc($id, $produtos, $quantidades) {
+    global $conn;
+
+    foreach ($produtos as $key => $value) {
+        $sql = "INSERT INTO assoc_produto_venda (CD_VENDA, CD_PRODUTO, QTD_PRODUTO) VALUES ($id, $value, {$quantidades[$key]})";
+        
+        try{
+            $stmt = $conn->prepare($sql);
+            $stmt->execute();
+        } catch (PDOException $e) {
+            echo $e->getMessage();
+        }
+    }
+
+}
+
 function deleteCliente($id) {
     global $conn;
 
@@ -117,6 +190,35 @@ function deleteProduto($id) {
     global $conn;
 
     $sql = "DELETE FROM produto WHERE CD_PRODUTO = $id";
+    
+    try{
+        $stmt = $conn->prepare($sql);
+        $stmt->execute();
+        return 'Success';
+    } catch (PDOException $e) {
+        echo $e->getMessage();
+    }
+}
+
+function deleteVenda($id) {
+    global $conn;
+
+    $sql = "DELETE FROM venda WHERE CD_VENDA = $id";
+    
+    try{
+        $stmt = $conn->prepare($sql);
+        $stmt->execute();
+        deleteVendaAssoc($id);
+        return 'Success';
+    } catch (PDOException $e) {
+        echo $e->getMessage();
+    }
+}
+
+function deleteVendaAssoc($id) {
+    global $conn;
+
+    $sql = "DELETE FROM assoc_produto_venda WHERE CD_VENDA = $id";
     
     try{
         $stmt = $conn->prepare($sql);

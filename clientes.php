@@ -1,7 +1,6 @@
 <?php
 
-require('view/header.html');
-require('functions/functions.php');
+require('view/header.php');
 error_reporting(0);
 
 $clientes = getClientes();
@@ -9,7 +8,7 @@ $clientes = getClientes();
 ?>
 
 <div class="container">
-    <table class="table table-striped table-bordered table-hover">
+    <table class="table table-striped table-bordered table-hover table-responsive-md">
         <thead>
             <tr>
                 <th scope="col">#</th>
@@ -41,6 +40,6 @@ $clientes = getClientes();
 
 <?php
 
-require('view/footer.html');
+require('view/footer.php');
 
 ?>

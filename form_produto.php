@@ -1,7 +1,6 @@
 <?php
 
-require('view/header.html');
-require('functions/functions.php');
+require('view/header.php');
 error_reporting(0);
 
 $action = empty($_GET['id']) ? 'create' : 'update';
@@ -31,6 +30,6 @@ $produto = empty($_GET['id']) ? "" : getProduto($_GET['id']);
 
 <?php
 
-require('view/footer.html');
+require('view/footer.php');
 
 ?>

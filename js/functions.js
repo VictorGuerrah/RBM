@@ -16,8 +16,13 @@ $('.card-venda').click(function(){
 $('.create-cliente').click(function(){
     window.location.replace('form_cliente.php')
 });
+
 $('.create-produto').click(function(){
     window.location.replace('form_produto.php')
+});
+
+$('.create-venda').click(function(){
+    window.location.replace('form_venda.php')
 });
 
 $('.update-cliente').click(function(){
@@ -30,7 +35,7 @@ $('.update-produto').click(function(){
     window.location.replace('form_produto.php?id=' + id)
 });
 
-// Ajax
+// Forms
 
 $('#form-cliente').submit(function(e){
     e.preventDefault()
@@ -86,6 +91,24 @@ $('.delete-produto').click(function(e){
     }
 });
 
+$('.delete-venda').click(function(e){
+    let id = $(this).attr('data-id');
+
+    if(confirm('Deseja realmente exlcuir essa venda?')){
+        $.ajax({
+            type: 'POST',
+            url: 'controller/venda.php',
+            data: {
+                id: id,
+                action: 'delete'
+            },
+            success: function( data ) {
+                window.location.reload()
+            }
+        });
+    }
+});
+
 $('#form-produto').submit(function(e){
     e.preventDefault()
 
@@ -104,3 +127,77 @@ $('#form-produto').submit(function(e){
     });
 });
 
+$('#form-venda').submit(function(e){
+    e.preventDefault()
+
+    let dados = new FormData(this)
+
+    $.ajax({
+        type: 'POST',
+        url: 'controller/venda.php',
+        data: dados,
+        processData: false,
+        cache: false,
+        contentType: false,
+        success: function( data ) {
+            window.location.replace('vendas.php')
+        }
+    });
+});
+
+// Action
+
+$('.add-produto').click(function(e){
+    e.preventDefault();
+    
+    $.ajax({
+        type: 'POST',
+        url: 'ajax/adicionar_produto.php',
+        success: function( data ) {
+            $('.rows').append(data);
+        }
+    });
+});
+
+$('.rows').on("click", ".delete-produto", function(e){
+    e.preventDefault();
+    
+    $(this).parent('div').parent('div').remove();
+});
+
+$('.rows').on("keyup", ".quantidade", function() {
+    let total = 0;
+    $('.row').each(function(){
+        let quantidade = $(this).find('.quantidade').val();
+        let produtos = $(this).find('[opcoes]')
+        let produto = produtos.children("option:selected")
+        total += parseFloat(produto.attr('data-valor')) * quantidade
+    })
+    $('#total').val(total);
+});
+
+$('.rows').on("change", "#select-produto", function() {
+    let total = 0;
+    $('.row').each(function(){
+        let quantidade = $(this).find('.quantidade').val();
+        let produtos = $(this).find('[opcoes]')
+        let produto = produtos.children("option:selected")
+        total += parseFloat(produto.attr('data-valor')) * quantidade
+    })
+    $('#total').val(total);
+});
+
+
+$('.info-venda').click(function(){
+    let id = $(this).attr('data-id');
+    $('#info').modal("show");
+
+    $.ajax({
+        type: 'POST',
+        url: 'ajax/show_venda.php',
+        data: {CD_VENDA: id},
+        success: function( data ) {
+            $('.modal-body').html(data);
+        }
+    });
+});

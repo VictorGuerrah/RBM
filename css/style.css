@@ -6,3 +6,11 @@
 .card {
     cursor: pointer;
 }
+
+.btn-produto {
+    margin-top: 2.6%;
+}
+
+.btn-salvar {
+    margin-top: 1%;
+}

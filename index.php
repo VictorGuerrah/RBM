@@ -1,6 +1,6 @@
 <?php
 
-require('view/header.html');
+require('view/header.php');
 
 ?>
 <div class="container">
@@ -35,6 +35,6 @@ require('view/header.html');
 
 <?php
 
-require('view/footer.html');
+require('view/footer.php');
 
 ?>
